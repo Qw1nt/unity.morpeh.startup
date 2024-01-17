@@ -3,6 +3,7 @@ using Qw1nt.MorpehStartup.Systems;
 using Scellecs.Morpeh;
 using Scellecs.Morpeh.Collections;
 using Unity.IL2CPP.CompilerServices;
+using UnityEngine;
 using VContainer;
 
 namespace Qw1nt.MorpehStartup.Aspects

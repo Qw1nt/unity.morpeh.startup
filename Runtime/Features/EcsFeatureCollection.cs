@@ -1,9 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using Cysharp.Threading.Tasks;
 using Qw1nt.MorpehStartup.Aspects;
 using Scellecs.Morpeh;
 using Scellecs.Morpeh.Collections;
 using Unity.IL2CPP.CompilerServices;
+using UnityEngine;
 using VContainer;
 
 namespace Qw1nt.MorpehStartup.Features
@@ -43,9 +45,9 @@ namespace Qw1nt.MorpehStartup.Features
 
             foreach (var feature in _features)
             {
-                _aspectsCollection.Clear();
+                _aspectsCollection.Reset();
                 feature.Build(_aspectsCollection);
-
+                
                 foreach (var aspect in _aspectsCollection)
                 {
                     aspect.SystemsGroup = world.CreateSystemsGroup();

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace Qw1nt.MorpehStartup.Aspects
 {
@@ -11,18 +12,13 @@ namespace Qw1nt.MorpehStartup.Aspects
         private int _pointer = -1;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-            _aspects.Clear();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AspectsCollection Add(EcsAspectBase aspectBase)
         {
             _aspects.Add(aspectBase);
             return this;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AspectsCollection Add<T>() where T : EcsAspectBase, new()
         {
             _aspects.Add(new T());
@@ -32,7 +28,10 @@ namespace Qw1nt.MorpehStartup.Aspects
         public bool MoveNext()
         {
             if (_pointer >= _aspects.Count - 1)
+            {
+                _pointer = -1;
                 return false;
+            }
 
             _pointer++;
             return true;
@@ -41,6 +40,7 @@ namespace Qw1nt.MorpehStartup.Aspects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
         {
+            _aspects.Clear();
             _pointer = -1;
         }
 
