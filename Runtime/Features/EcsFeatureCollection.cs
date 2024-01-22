@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Cysharp.Threading.Tasks;
 using Qw1nt.MorpehStartup.Aspects;
@@ -17,6 +18,8 @@ namespace Qw1nt.MorpehStartup.Features
         private readonly FastList<IEcsFeature> _features = new();
         private readonly AspectsCollection _aspectsCollection = new();
         private readonly FastList<IPrepareSystem> _preparedSystems = new(32);
+
+        public bool IsBuild { get; private set; } = false;
 
         public int Count
         {
@@ -41,6 +44,7 @@ namespace Qw1nt.MorpehStartup.Features
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public async UniTaskVoid Build(World world, IObjectResolver resolver)
         {
+            var initializationQueue = new Queue<InitializationQueueItem>(_features.capacity * 2);
             var systemIndex = 0;
 
             foreach (var feature in _features)
@@ -57,7 +61,7 @@ namespace Qw1nt.MorpehStartup.Features
                     aspect.Init();
                     await aspect.Prepare();
 
-                    world.AddSystemsGroup(systemIndex, aspect.SystemsGroup);
+                    initializationQueue.Enqueue(new InitializationQueueItem(systemIndex, aspect.SystemsGroup));
                     systemIndex++;
                 }
             }
@@ -69,6 +73,28 @@ namespace Qw1nt.MorpehStartup.Features
             
             _preparedSystems.Clear();
             _preparedSystems.capacity = 0;
+
+            while (initializationQueue.Count > 0)
+            {
+                var item = initializationQueue.Dequeue();
+                world.AddSystemsGroup(item.Index, item.SystemsGroup);
+            }
+            
+            IsBuild = true;
+        }
+        
+        // TODO Rename
+        private struct InitializationQueueItem
+        {
+            public InitializationQueueItem(int index, SystemsGroup systemsGroup)
+            {
+                Index = index;
+                SystemsGroup = systemsGroup;
+            }
+
+            public int Index { get; }
+            
+            public SystemsGroup SystemsGroup { get; }
         }
     }
 }

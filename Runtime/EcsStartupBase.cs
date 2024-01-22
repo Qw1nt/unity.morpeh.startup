@@ -9,7 +9,6 @@ namespace Qw1nt.Runtime.MorpehStartup
     public abstract class EcsStartupBase : MonoBehaviour
     {
         [Inject] private readonly IObjectResolver _objectResolver;
-
         private readonly EcsFeatureCollection _features = new();
 
         private static World World => World.Default;
@@ -25,9 +24,14 @@ namespace Qw1nt.Runtime.MorpehStartup
             return false;
         }
         
+        private bool CanUpdateState()
+        {
+            return _features.IsBuild != false && IsFreeze();
+        }
+        
         private void FixedUpdate()
         {
-            if (IsFreeze() == true)
+            if (CanUpdateState() == true)
                 return;
 
             World.FixedUpdate(Time.fixedDeltaTime);
@@ -35,7 +39,7 @@ namespace Qw1nt.Runtime.MorpehStartup
 
         private void Update()
         {
-            if (IsFreeze() == true)
+            if (CanUpdateState() == true)
                 return;
 
             World.Update(Time.deltaTime);
@@ -43,7 +47,7 @@ namespace Qw1nt.Runtime.MorpehStartup
 
         private void LateUpdate()
         {
-            if (IsFreeze() == true)
+            if (CanUpdateState() == true)
                 return;
 
             World.LateUpdate(Time.deltaTime);
