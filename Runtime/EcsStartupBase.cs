@@ -48,10 +48,21 @@ namespace Qw1nt.Runtime.MorpehStartup
         private void LateUpdate()
         {
             if (CanUpdateState() == true)
+            {
+                EndProcessing();
                 return;
+            }
 
             World.LateUpdate(Time.deltaTime);
             World.CleanupUpdate(Time.deltaTime);
+            
+            EndProcessing();
+        }
+
+        // TODO добавить Pipeline post processor
+        protected virtual void EndProcessing()
+        {
+            
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
