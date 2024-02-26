@@ -52,11 +52,12 @@ namespace Qw1nt.MorpehStartup.Aspects
 
         private void DeterminateSystem(object instance)
         {
-            Resolver.Inject(instance);
-
             if (instance is IPrepareSystem prepareSystem)
                 PreparedSystems.Add(prepareSystem);
-            
+
+            if (instance is IInjectableSystem injectableSystem)
+                injectableSystem.InjectDependencies(Resolver);
+
             switch (instance)
             {
                 case ICleanupSystem cleanupSystem:

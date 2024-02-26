@@ -11,6 +11,8 @@ namespace Qw1nt.Runtime.MorpehStartup
         [Inject] private readonly IObjectResolver _objectResolver;
         private readonly EcsFeatureCollection _features = new();
 
+        private bool _isLocked = false;
+
         private static World World => World.Default;
 
         private void Awake()
@@ -24,14 +26,14 @@ namespace Qw1nt.Runtime.MorpehStartup
             return false;
         }
         
-        private bool CanUpdateState()
+        private bool IsLocked()
         {
             return _features.IsBuild != false && IsFreeze();
         }
         
         private void FixedUpdate()
         {
-            if (CanUpdateState() == true)
+            if (_isLocked == true)
                 return;
 
             World.FixedUpdate(Time.fixedDeltaTime);
@@ -39,7 +41,7 @@ namespace Qw1nt.Runtime.MorpehStartup
 
         private void Update()
         {
-            if (CanUpdateState() == true)
+            if (_isLocked == true)
                 return;
 
             World.Update(Time.deltaTime);
@@ -47,18 +49,24 @@ namespace Qw1nt.Runtime.MorpehStartup
 
         private void LateUpdate()
         {
-            if (CanUpdateState() == true)
+            if (_isLocked == true)
             {
-                EndProcessing();
+                UpdateLockState();
                 return;
             }
 
             World.LateUpdate(Time.deltaTime);
             World.CleanupUpdate(Time.deltaTime);
-            
-            EndProcessing();
+
+            UpdateLockState();
         }
 
+        private void UpdateLockState()
+        {
+            EndProcessing();
+            _isLocked = IsLocked();
+        }
+        
         // TODO добавить Pipeline post processor
         protected virtual void EndProcessing()
         {

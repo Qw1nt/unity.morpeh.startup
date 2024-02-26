@@ -51,13 +51,13 @@ namespace Qw1nt.MorpehStartup.Features
             {
                 _aspectsCollection.Reset();
                 feature.Build(_aspectsCollection);
-                
+
                 foreach (var aspect in _aspectsCollection)
                 {
                     aspect.SystemsGroup = world.CreateSystemsGroup();
                     aspect.Resolver = resolver;
                     aspect.PreparedSystems = _preparedSystems;
-                    
+
                     aspect.Init();
                     await aspect.Prepare();
 
@@ -70,7 +70,7 @@ namespace Qw1nt.MorpehStartup.Features
 
             _features.Clear();
             _features.capacity = 0;
-            
+
             _preparedSystems.Clear();
             _preparedSystems.capacity = 0;
 
@@ -79,10 +79,10 @@ namespace Qw1nt.MorpehStartup.Features
                 var item = initializationQueue.Dequeue();
                 world.AddSystemsGroup(item.Index, item.SystemsGroup);
             }
-            
+
             IsBuild = true;
         }
-        
+
         // TODO Rename
         private struct InitializationQueueItem
         {
@@ -93,7 +93,7 @@ namespace Qw1nt.MorpehStartup.Features
             }
 
             public int Index { get; }
-            
+
             public SystemsGroup SystemsGroup { get; }
         }
     }
